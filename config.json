@@ -21,6 +21,7 @@
   "num_classes": 1,
     "sub_class": [0,1],
     "dist": [0.1,1.1],
+  "num_channel_input": 1,
   "age_no": 6,
   "age_reg": 1
 }

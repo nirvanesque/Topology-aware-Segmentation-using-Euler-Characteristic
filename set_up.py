@@ -3,7 +3,6 @@ import os
 import torch
 import sys
 sys.path.append('../../../')
-
 from network import *
 from utils.processing import zero_mean_unit_var, range_matching, zero_one, threshold_zero
 from utils.transforms import Resampler, Normalizer
@@ -47,6 +46,8 @@ def set_up_model(args):
     else:
         num_channel_output = num_foreground + 1
 
+    num_channel_input = config['num_channel_input']
+
     gamma = 0.5 ** (1 / config['epoch_decay_steps'])
 
     config_dict = {'config': config,
@@ -55,8 +56,10 @@ def set_up_model(args):
                    }
 
     if args.phase in ['train_pre', 'test_pre', ]:
-        if not args.mode3d:
-            preNet = UNet2D(num_classes=num_channel_output).to(device)
+        if args.mode3d:
+            preNet = UNet3D(num_classes=num_channel_output, num_channel=num_channel_input).to(device)
+        else:
+            preNet = UNet2D(num_classes=num_channel_output, num_channel=num_channel_input).to(device)
         parameters_preNet = list(preNet.parameters())
         optimizer_preNet = torch.optim.Adam(parameters_preNet, lr=config['learning_rate'])
         scheduler_preNet = torch.optim.lr_scheduler.ExponentialLR(optimizer_preNet, gamma, last_epoch=-1)
@@ -68,7 +71,9 @@ def set_up_model(args):
         })
 
     elif args.phase in ['train_post', 'test_post',]:
-        if not args.mode3d:
+        if args.mode3d:
+            postNet = UNet3D(num_classes=num_channel_output).to(device)
+        else:
             postNet = UNet2D(num_classes=num_channel_output).to(device)
         parameters_postNet = list(postNet.parameters())
         optimizer_postNet = torch.optim.Adam(parameters_postNet, lr=config['learning_rate'])
@@ -82,7 +87,11 @@ def set_up_model(args):
 
 
     elif args.phase == 'test':
-        if not args.mode3d:
+        if args.mode3d:
+            preNet = UNet3D(num_classes=num_channel_output).to(device)
+            postNet = UNet3D(num_classes=num_channel_output).to(device)
+
+        else:
             preNet = UNet2D(num_classes=num_channel_output).to(device)
             postNet = UNet2D(num_classes=num_channel_output).to(device)
 
@@ -94,10 +103,11 @@ def set_up_model(args):
 
     if args.phase == 'euler_visualization' or args.visual_euler:
         print('initializing EC network, ', str(args.subpatch_size), str(args.subpatch_stride))
-        if not args.mode3d:
-            subpatch_size = int(args.subpatch_size)
-            subpatch_stride = int(args.subpatch_stride)
-            ec = EC(subpatch_size=subpatch_size, subpatch_stride=subpatch_stride).to(device)
+        if args.mode3d:
+            ec = EC_3d(subpatch_size=args.subpatch_size, subpatch_stride=args.subpatch_stride).to(device)
+        else:
+            ec = EC(subpatch_size=args.subpatch_size, subpatch_stride=args.subpatch_stride).to(device)
+
 
         config_dict.update({
             'ec': ec,
