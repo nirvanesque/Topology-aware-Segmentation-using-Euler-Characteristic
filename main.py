@@ -15,7 +15,7 @@ separator = '----------------------------------------'
 if __name__ == '__main__':
     # Set up argument parser
     #-----------------------------------------------------------------------------------------------------------------
-    parser = argparse.ArgumentParser(description='Topology-aware Segmentatstrion')
+    parser = argparse.ArgumentParser(description='Topology-aware Segmentation')
     parser.add_argument('--dev_true', default='0', type=str, help='cuda device (default: 0)')
     parser.add_argument('--dev', default='0', type=str, help='cuda device (default: 0)')
     parser.add_argument('--seed', type=int, default=42, help='random seed (default: 42)')
@@ -113,7 +113,7 @@ if __name__ == '__main__':
 
     if args.phase == 'train_pre':
         print(separator)
-        print('Start to train segmentation model stage 1, model and tensorboard files will be saved in {} and {}'.format(args.model, args.TBout))
+        print('Start training segmentation model stage 1. Model and tensorboard files will be saved in {} and {}'.format(args.model, args.TBout))
         print(separator)
         mk_dirs(args.TBout, args.model)
         train(args)
@@ -123,14 +123,14 @@ if __name__ == '__main__':
         args.trained_model_pre = args.model
         args.out = args.TBout
         args.phase = 'test_pre'
-        print('Start to test stage 1 segmentation model {} , results will be saved in {}'.format(args.trained_model_pre, args.out))
+        print('Start testing stage 1 segmentation model {}. Results will be saved in {}'.format(args.trained_model_pre, args.out))
         print(separator)
         mk_dirs(os.path.join(args.out))
         test_single_stage(args)
 
     elif args.phase == 'train_post':
         print(separator)
-        print('Start to train segmentation model stage 2, model and tensorboard files will be saved in {} and {}'.format(args.model, args.TBout))
+        print('Start training segmentation model stage 2. Model and tensorboard files will be saved in {} and {}'.format(args.model, args.TBout))
         print(separator)
         mk_dirs(args.TBout, args.model)
         train(args)
@@ -142,33 +142,33 @@ if __name__ == '__main__':
         args.phase = 'test_post'
         args.test_ec = args.val_ec
         args.test_softmax = args.val_softmax
-        print('Start to test stage 2 segmentation model {}, results will be saved in {}'.format(args.trained_model_post, args.out))
+        print('Start testing stage 2 segmentation model {}. Results will be saved in {}'.format(args.trained_model_post, args.out))
         print(separator)
         mk_dirs(os.path.join(args.out))
         test_single_stage(args)
 
     elif args.phase == 'test':
         print(separator)
-        print('Start to test both stage 1 and stage 2 segmentation models {} and {}, results will be saved in {}'.format(args.trained_model_pre, args.trained_model_post, args.out))
+        print('Start testing both stage 1 and stage 2 segmentation models {} and {}. Results will be saved in {}'.format(args.trained_model_pre, args.trained_model_post, args.out))
         print(separator)
         mk_dirs(args.out, args.TBout,)
         args.visual_euler = True
         test_two_stages(args)
     elif args.phase == 'test_pre':
         print(separator)
-        print('Start to test stage 1 segmentation model {} , results will be saved in {}'.format(args.trained_model_pre, args.out))
+        print('Start testing stage 1 segmentation model {}. Results will be saved in {}'.format(args.trained_model_pre, args.out))
         print(separator)
         mk_dirs(os.path.join(args.out))
         test_single_stage(args)
     elif args.phase == 'test_post':
         print(separator)
-        print('Start to test stage 2 segmentation model {}, results will be saved in {}'.format(args.trained_model_post, args.out))
+        print('Start testing stage 2 segmentation model {}. Results will be saved in {}'.format(args.trained_model_post, args.out))
         print(separator)
         mk_dirs(os.path.join(args.out))
         test_single_stage(args)
     elif args.phase == 'euler_visualization':
         print(separator)
-        print('Start to generate euler error map, results will be saved in {}'.format(args.out))
+        print('Start generating euler error map. Results will be saved in {}'.format(args.out))
         print(separator)
         args.visual_euler = True
         mk_dirs(os.path.join(args.out))
